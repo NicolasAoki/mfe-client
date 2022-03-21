@@ -4,6 +4,8 @@ import { Button } from 'antd';
 import TableDatasets from './TableDatasets'
 import AddDatasetModal from './AddDatasetModal'
 import axios from 'axios';
+import io from 'socket.io-client'
+const socket = io('http://localhost:9000/downloadprogress')
 
 function App() {
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -17,6 +19,43 @@ function App() {
     getDataset()
   }, [])
 
+  useEffect(() => {
+    socket.on('dataset_download_progress_event', (incomingDataset) => {
+      console.log({incomingDataset})
+      handleSocketDownloadProgress(incomingDataset)
+    })
+  }, [])
+
+  const handleSocketDownloadProgress = (incomingDataset) => {
+    if (!incomingDataset) return
+
+    setDataSource(prev => {
+      if (!prev.length) return
+
+      return prev.map(rowData => {
+        console.log({rowData, incomingDataset})
+        if (rowData._id === incomingDataset.data._id) {
+          const percentage = incomingDataset.data.payload.percentage
+          const path = incomingDataset?.data?.payload?.path || ''
+          const currentPercentage = (Math.round(percentage * 100)).toFixed(2)
+
+          console.log({
+            a: rowData._id,
+            b: incomingDataset._id,
+            currentPercentage,
+            path,
+          })
+          return {
+            ...rowData,
+            path,
+            downloadProgress: currentPercentage
+          }
+        }
+        return rowData
+      })
+
+    })
+  }
 
   const showModal = () => {
     setIsModalVisible(true);

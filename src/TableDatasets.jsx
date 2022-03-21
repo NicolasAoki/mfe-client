@@ -1,11 +1,10 @@
 import React from 'react'
-import { Table, Space } from 'antd';
+import { Table, Space, Progress } from 'antd';
 
 const TableDatasets = ({
   dataSource,
   handleDelete,
 }) => {
-
   const columns = [
     {
       title: 'id',
@@ -23,10 +22,24 @@ const TableDatasets = ({
       key: 'format',
     },
     {
-      title: 'Download Link',
-      dataIndex: 'downloadLink',
-      key: 'downloadLink',
-      render: text => <a>{text}</a>,
+      title: 'Path',
+      dataIndex: 'path',
+      key: 'path',
+    },
+    {
+      title: 'Downloaded',
+      dataIndex: 'downloadProgress',
+      key: 'downloadProgress',
+      render: downloadProgress => (
+        <>
+          <div style={{ width: 170 }}>
+            <Progress percent={downloadProgress} size="small" />
+            {/* <Progress percent={50} size="small" status="active" />
+            <Progress percent={70} size="small" status="exception" />
+            <Progress percent={100} size="small" /> */}
+          </div>
+        </>
+      ),
     },
     {
       title: 'Action',
@@ -46,7 +59,9 @@ const TableDatasets = ({
       _id: data._id,
       key: data._id,
       name: data.name,
+      path: data.path,
       downloadLink: data.downloadLink,
+      downloadProgress: data.downloadProgress,
       format: data.format,
     }))
   }
