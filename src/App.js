@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import './App.css';
-import { Button } from 'antd';
+import { Button, message } from 'antd';
 import TableDatasets from './TableDatasets'
 import AddDatasetModal from './AddDatasetModal'
 import axios from 'axios';
 import io from 'socket.io-client'
+
 const socket = io('http://localhost:9000/downloadprogress')
 
 function App() {
@@ -33,18 +34,10 @@ function App() {
       if (!prev.length) return
 
       return prev.map(rowData => {
-        console.log({rowData, incomingDataset})
         if (rowData._id === incomingDataset.data._id) {
           const percentage = incomingDataset.data.payload.percentage
           const path = incomingDataset?.data?.payload?.path || ''
           const currentPercentage = (Math.round(percentage * 100)).toFixed(2)
-
-          console.log({
-            a: rowData._id,
-            b: incomingDataset._id,
-            currentPercentage,
-            path,
-          })
           return {
             ...rowData,
             path,
@@ -62,11 +55,18 @@ function App() {
   };
 
   const handleOk = (id) => {
-    console.log({id})
-    axios.post(`http://localhost:9000/store-dataset`, { id })
-      .then(() => getDataset())
-      .catch(err => console.log(err))
-    setIsModalVisible(false);
+    axios.post(`http://localhost:9000/store-dataset`, { id, type: 'openml' })
+      .then(() => {
+        getDataset()
+        setIsModalVisible(false);
+      })
+      .catch(error => {
+        if (error?.response?.data?.message === 'duplicate dataset added') {
+          message.warning('Duplicate dataset, try another one');
+        } else {
+          message.warning('Something went wrong');
+        }
+      })
   };
 
   const handleCancel = () => {

@@ -17,9 +17,9 @@ const TableDatasets = ({
       key: 'name',
     },
     {
-      title: 'Format',
-      dataIndex: 'format',
-      key: 'format',
+      title: 'Type',
+      dataIndex: 'type',
+      key: 'type',
     },
     {
       title: 'Path',
@@ -33,10 +33,9 @@ const TableDatasets = ({
       render: downloadProgress => (
         <>
           <div style={{ width: 170 }}>
-            <Progress percent={downloadProgress} size="small" />
-            {/* <Progress percent={50} size="small" status="active" />
-            <Progress percent={70} size="small" status="exception" />
-            <Progress percent={100} size="small" /> */}
+            <Progress percent={downloadProgress} size="small"/>
+            {/* /* <Progress percent={50} size="small" status="active" />
+            <Progress percent={70} size="small" status="exception" /> */}
           </div>
         </>
       ),
@@ -62,7 +61,7 @@ const TableDatasets = ({
       path: data.path,
       downloadLink: data.downloadLink,
       downloadProgress: data.downloadProgress,
-      format: data.format,
+      type: data.type,
     }))
   }
 
