@@ -55,6 +55,9 @@ function App() {
   };
 
   const handleOk = (id) => {
+    if (!id) {
+      return message.warning('Please insert an OpenML ID');
+    }
     axios.post(`http://localhost:9000/store-dataset`, { id, type: 'openml' })
       .then(() => {
         getDataset()
