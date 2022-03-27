@@ -6,9 +6,9 @@ import { InboxOutlined } from '@ant-design/icons';
 const LocalStorageModal = ({}) => {
   const { Dragger } = Upload;
   const props = {
+    action: 'http://localhost:9000/store-dataset/local',
+    accept: '.arff',
     name: 'file',
-    multiple: false,
-    action: 'https://www.mocky.io/v2/5cc8019d300000980a055e76',
     onChange(info) {
       const { status } = info.file;
       if (status !== 'uploading') {
@@ -27,7 +27,8 @@ const LocalStorageModal = ({}) => {
   return (
     <>
       <h1>please insert .arff file</h1>
-      <Dragger {...props}>
+      <Dragger
+        {...props}>
         <p className="ant-upload-drag-icon">
           <InboxOutlined />
         </p>

@@ -4,6 +4,7 @@ import { Table, Space, Progress } from 'antd';
 const TableDatasets = ({
   dataSource,
   handleDelete,
+  handlePreview
 }) => {
   const columns = [
     {
@@ -45,6 +46,7 @@ const TableDatasets = ({
       key: 'action',
       render: (_, record) => (
         <Space size="middle">
+          <a onClick={() => handlePreview(record._id)}>Preview</a>
           <a onClick={() => handleDelete(record._id)}>Delete</a>
         </Space>
       ),

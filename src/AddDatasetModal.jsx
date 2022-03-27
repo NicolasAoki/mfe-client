@@ -7,7 +7,8 @@ import LocalStorageModal from './ModalTypes/LocalStorageModal'
 
 const AddDatasetModal = ({
   isModalVisible,
-  handleOk,
+  handleOpemlSubmit,
+  handleCustomUrlSubmit,
   handleCancel,
 }) => {
   const [modalType, setModalType] = useState({
@@ -16,10 +17,12 @@ const AddDatasetModal = ({
     customUrl: false,
   })
   const [openmlId, setOpenmlId] = useState('')
+  const [customUrlInput, setCustomUrlInput] = useState('')
+
 
   const handleSubmit = () => {
-    if (!openmlId) handleCancel()
-    handleOk(openmlId)
+    if (openmlId) handleOpemlSubmit(openmlId)
+    if (customUrlInput) handleCustomUrlSubmit(customUrlInput)
   }
 
   const handleOnChangeModalType = (incomingModalType) => {
@@ -47,10 +50,10 @@ const AddDatasetModal = ({
           <OpenMLModal onChangeInput={setOpenmlId}/>
         }
         { !!modalType.localStorage &&
-          <LocalStorageModal/>
+          <LocalStorageModal />
         }
         { !!modalType.customUrl &&
-          <CustomUrlModal onChangeInput={setOpenmlId}/>
+          <CustomUrlModal onChangeInput={setCustomUrlInput}/>
         }
       </Modal>
     </>

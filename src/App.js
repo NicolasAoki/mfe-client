@@ -54,7 +54,7 @@ function App() {
     setIsModalVisible(true);
   };
 
-  const handleOk = (id) => {
+  const handleOpemlSubmit = (id) => {
     if (!id) {
       return message.warning('Please insert an OpenML ID');
     }
@@ -70,7 +70,25 @@ function App() {
           message.warning('Something went wrong');
         }
       })
-  };
+  }
+
+  const handleCustomUrlSubmit = (url) => {
+    if (!url) {
+      return message.warning('Please insert a custom url');
+    }
+    axios.post(`http://localhost:9000/store-dataset`, { url, type: 'customURL' })
+      .then(() => {
+        getDataset()
+        setIsModalVisible(false);
+      })
+      .catch(error => {
+        if (error?.response?.data?.message === 'duplicate dataset added') {
+          message.warning('Duplicate dataset, try another one');
+        } else {
+          message.warning('Something went wrong');
+        }
+      })
+  }
 
   const handleCancel = () => {
     setIsModalVisible(false);
@@ -83,6 +101,13 @@ function App() {
     .catch(err => console.log(err))
   }
 
+  const handlePreview = (_id) => {
+    console.log({_id})
+    axios.post(`http://localhost:9000/preview-dataset`, { _id })
+    .then(() => getDataset())
+    .catch(err => console.log(err))
+  }
+
   return (
     <>
       <Button type="primary" onClick={showModal}>
@@ -91,11 +116,13 @@ function App() {
       <TableDatasets
         dataSource={dataSource}
         handleDelete={handleDeleteRow}
+        handlePreview={handlePreview}
       />
       { isModalVisible &&
         <AddDatasetModal
           isModalVisible={isModalVisible}
-          handleOk={handleOk}
+          handleOpemlSubmit={handleOpemlSubmit}
+          handleCustomUrlSubmit={handleCustomUrlSubmit}
           handleCancel={handleCancel}
         />
       }
