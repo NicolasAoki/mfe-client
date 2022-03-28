@@ -1,11 +1,21 @@
 import React from 'react'
-import { Table, Space, Progress } from 'antd';
+import {
+  Table,
+  Space,
+  Progress,
+  Popconfirm,
+  message,
+} from 'antd';
 
 const TableDatasets = ({
   dataSource,
   handleDelete,
-  handlePreview
+  handlePreview,
 }) => {
+  const text = 'Are you sure to delete this task?';
+  function confirm() {
+    message.info('Clicked on Yes.');
+  }
   const columns = [
     {
       title: 'id',
@@ -35,8 +45,6 @@ const TableDatasets = ({
         <>
           <div style={{ width: 170 }}>
             <Progress percent={downloadProgress} size="small"/>
-            {/* /* <Progress percent={50} size="small" status="active" />
-            <Progress percent={70} size="small" status="exception" /> */}
           </div>
         </>
       ),

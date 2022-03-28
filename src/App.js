@@ -1,19 +1,28 @@
 import React, { useState, useEffect } from 'react'
 import './App.css';
-import { Button, message } from 'antd';
+import { Button, message, Spin } from 'antd';
 import TableDatasets from './TableDatasets'
 import AddDatasetModal from './AddDatasetModal'
 import axios from 'axios';
 import io from 'socket.io-client'
+import PreviewDatasetModal from './ModalTypes/PreviewDatasetModal'
 
 const socket = io('http://localhost:9000/downloadprogress')
 
 function App() {
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [isPreviewModalVisible, setIsPreviewModalVisible] = useState(false)
+  const [previewDataset, setDatasetPreview] = useState({})
   const [dataSource, setDataSource] = useState([])
+
   const getDataset = async() => {
+    setLoading(true)
     return await axios.get(`http://localhost:9000/get-datasets`).then(
-      res => setDataSource(res.data)
+      res => {
+        setDataSource(res.data)
+        setLoading(false)
+      }
     )
   }
   useEffect(() => {
@@ -58,12 +67,15 @@ function App() {
     if (!id) {
       return message.warning('Please insert an OpenML ID');
     }
+    setLoading(true)
     axios.post(`http://localhost:9000/store-dataset`, { id, type: 'openml' })
       .then(() => {
+        setLoading(false)
         getDataset()
         setIsModalVisible(false);
       })
       .catch(error => {
+        setLoading(false)
         if (error?.response?.data?.message === 'duplicate dataset added') {
           message.warning('Duplicate dataset, try another one');
         } else {
@@ -76,12 +88,15 @@ function App() {
     if (!url) {
       return message.warning('Please insert a custom url');
     }
+    setLoading(true)
     axios.post(`http://localhost:9000/store-dataset`, { url, type: 'customURL' })
       .then(() => {
+        setLoading(false)
         getDataset()
         setIsModalVisible(false);
       })
       .catch(error => {
+        setLoading(false)
         if (error?.response?.data?.message === 'duplicate dataset added') {
           message.warning('Duplicate dataset, try another one');
         } else {
@@ -95,17 +110,32 @@ function App() {
   };
 
   const handleDeleteRow = (_id) => {
-    console.log({_id})
+    setLoading(true)
     axios.post(`http://localhost:9000/remove-dataset`, { _id })
-    .then(() => getDataset())
-    .catch(err => console.log(err))
+    .then(() => {
+      setLoading(false)
+      getDataset()
+    })
+    .catch(err => {
+      setLoading(false)
+      console.log(err)
+    })
   }
 
   const handlePreview = (_id) => {
+    console.log('aqi', _id)
     console.log({_id})
+    setLoading(true)
     axios.post(`http://localhost:9000/preview-dataset`, { _id })
-    .then(() => getDataset())
-    .catch(err => console.log(err))
+    .then(({data}) => {
+      setLoading(false)
+      setDatasetPreview(data)
+      setIsPreviewModalVisible(true)
+    })
+    .catch(err => {
+      setLoading(false)
+      console.log(err)
+    })
   }
 
   return (
@@ -113,17 +143,32 @@ function App() {
       <Button type="primary" onClick={showModal}>
         Add new dataset
       </Button>
-      <TableDatasets
-        dataSource={dataSource}
-        handleDelete={handleDeleteRow}
-        handlePreview={handlePreview}
-      />
+      <Spin
+        spinning={loading}
+        size={'large'}
+      >
+        <TableDatasets
+          dataSource={dataSource}
+          handleDelete={handleDeleteRow}
+          handlePreview={handlePreview}
+        />
+      </Spin>
       { isModalVisible &&
-        <AddDatasetModal
-          isModalVisible={isModalVisible}
-          handleOpemlSubmit={handleOpemlSubmit}
-          handleCustomUrlSubmit={handleCustomUrlSubmit}
-          handleCancel={handleCancel}
+        <Spin spinning={loading} size={'large'} tip={'Loading...'}>
+          <AddDatasetModal
+            reloadDatasetTable={getDataset}
+            isModalVisible={isModalVisible}
+            handleOpemlSubmit={handleOpemlSubmit}
+            handleCustomUrlSubmit={handleCustomUrlSubmit}
+            handleCancel={handleCancel}
+            loading={loading}
+          />
+        </Spin>
+      }
+      { isPreviewModalVisible && 
+        <PreviewDatasetModal
+          handleVisible={setIsPreviewModalVisible}
+          previewDataset={previewDataset}
         />
       }
     </>

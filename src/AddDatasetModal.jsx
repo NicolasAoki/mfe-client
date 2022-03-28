@@ -10,6 +10,8 @@ const AddDatasetModal = ({
   handleOpemlSubmit,
   handleCustomUrlSubmit,
   handleCancel,
+  reloadDatasetTable,
+  loading,
 }) => {
   const [modalType, setModalType] = useState({
     openml: false,
@@ -44,13 +46,18 @@ const AddDatasetModal = ({
         visible={isModalVisible}
         onOk={handleSubmit}
         onCancel={handleCancel}
+        closable
+        okButtonProps={{disabled: loading}}
       >
         <SelectDatasets onChange={handleOnChangeModalType}/>
         { !!modalType.openml &&
           <OpenMLModal onChangeInput={setOpenmlId}/>
         }
         { !!modalType.localStorage &&
-          <LocalStorageModal />
+          <LocalStorageModal
+            handleCancel={handleCancel}
+            reloadDatasetTable={reloadDatasetTable}
+          />
         }
         { !!modalType.customUrl &&
           <CustomUrlModal onChangeInput={setCustomUrlInput}/>
