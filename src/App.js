@@ -6,6 +6,7 @@ import AddDatasetModal from './AddDatasetModal'
 import axios from 'axios';
 import io from 'socket.io-client'
 import PreviewDatasetModal from './ModalTypes/PreviewDatasetModal'
+import PreviewFeatureModal from './ModalTypes/PreviewFeatureModal';
 
 const socket = io('http://localhost:9000/downloadprogress')
 
@@ -13,8 +14,10 @@ function App() {
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [loading, setLoading] = useState(false)
   const [isPreviewModalVisible, setIsPreviewModalVisible] = useState(false)
+  const [isPreviewFeatureModalVisible, setIsPreviewFeatureModalVisible] = useState(false)
   const [previewDataset, setDatasetPreview] = useState({})
   const [dataSource, setDataSource] = useState([])
+  const [selectedRowKeys, setSelectedRowKeys] = useState([])
 
   const getDataset = async() => {
     setLoading(true)
@@ -138,6 +141,14 @@ function App() {
     })
   }
 
+  const handleFeaturePreview = () => {
+    setIsPreviewFeatureModalVisible(true)
+  }
+
+  const handleFeaturePreviewDataset = () => {
+    return dataSource.filter(data => selectedRowKeys.includes(data._id))
+  }
+
   return (
     <>
       <Button type="primary" onClick={showModal}>
@@ -151,8 +162,13 @@ function App() {
           dataSource={dataSource}
           handleDelete={handleDeleteRow}
           handlePreview={handlePreview}
+          setSelectedRowKeys={setSelectedRowKeys}
+          selectedRowKeys={selectedRowKeys}
         />
       </Spin>
+      <Button type="primary" onClick={handleFeaturePreview}>
+        Compare features
+      </Button>
       { isModalVisible &&
         <Spin spinning={loading} size={'large'} tip={'Loading...'}>
           <AddDatasetModal
@@ -169,6 +185,12 @@ function App() {
         <PreviewDatasetModal
           handleVisible={setIsPreviewModalVisible}
           previewDataset={previewDataset}
+        />
+      }
+      { isPreviewFeatureModalVisible && 
+        <PreviewFeatureModal
+          handleVisible={setIsPreviewFeatureModalVisible}
+          featurePreview={handleFeaturePreviewDataset()}
         />
       }
     </>

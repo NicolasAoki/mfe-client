@@ -3,19 +3,16 @@ import {
   Table,
   Space,
   Progress,
-  Popconfirm,
-  message,
 } from 'antd';
 
 const TableDatasets = ({
   dataSource,
   handleDelete,
   handlePreview,
+  setSelectedRowKeys,
+  selectedRowKeys,
 }) => {
-  const text = 'Are you sure to delete this task?';
-  function confirm() {
-    message.info('Clicked on Yes.');
-  }
+
   const columns = [
     {
       title: 'id',
@@ -62,7 +59,6 @@ const TableDatasets = ({
   ];
     
   const handleDataSource = () => {
-    console.log({dataSource})
     if (!dataSource.length) return []
     return dataSource.map(data => ({
       _id: data._id,
@@ -75,8 +71,17 @@ const TableDatasets = ({
     }))
   }
 
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: (newSelectedRowKeys) => {
+      console.log('selectedRowKeys changed: ', selectedRowKeys);
+      setSelectedRowKeys(newSelectedRowKeys);
+    }
+  };
+
   return (
     <Table
+      rowSelection={rowSelection}
       columns={columns}
       dataSource={handleDataSource()}
     />
