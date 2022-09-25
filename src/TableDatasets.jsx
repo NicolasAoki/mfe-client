@@ -74,8 +74,7 @@ const TableDatasets = ({
   const rowSelection = {
     selectedRowKeys,
     onChange: (newSelectedRowKeys) => {
-      console.log('selectedRowKeys changed: ', selectedRowKeys);
-      setSelectedRowKeys(newSelectedRowKeys);
+      setSelectedRowKeys(newSelectedRowKeys)
     }
   };
 

@@ -34,7 +34,6 @@ function App() {
 
   useEffect(() => {
     socket.on('dataset_download_progress_event', (incomingDataset) => {
-      console.log({incomingDataset})
       handleSocketDownloadProgress(incomingDataset)
     })
   }, [])
@@ -126,8 +125,6 @@ function App() {
   }
 
   const handlePreview = (_id) => {
-    console.log('aqi', _id)
-    console.log({_id})
     setLoading(true)
     axios.post(`http://localhost:9000/preview-dataset`, { _id })
     .then(({data}) => {
