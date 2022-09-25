@@ -14,7 +14,7 @@ const PreviewFeatureModal = ({
       onCancel={() => handleVisible(false)}
       width={1440}
     >
-      <Tabs defaultActiveKey="2">
+      <Tabs defaultActiveKey="1">
         <Tabs.TabPane tab="Meta features" key="1">
           <PreviewFeatureTable
             dataSource={featurePreview}
